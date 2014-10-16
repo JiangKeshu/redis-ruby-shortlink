@@ -3,9 +3,11 @@ require 'redis'
 
 set :bind, '0.0.0.0'
 set :port, 8080
- 
-redis_w = Redis.new(:host => "shorturl-m.tfa0rf.0001.apse1.cache.amazonaws.com", :port=> 6379)
-redis_r = Redis.new(:host => "shorturl-g.tfa0rf.ng.0001.apse1.cache.amazonaws.com", :port=> 6379)
+
+redis_endpoint_w = "shorturl-m.tfa0rf.0001.apse1.cache.amazonaws.com"
+redis_endpoint_r = "shorturl-g.tfa0rf.ng.0001.apse1.cache.amazonaws.com"
+
+redis_w = Redis.new(:host => redis_endpoint_w, :port=> 6379)
  
 helpers do
   include Rack::Utils
@@ -29,6 +31,7 @@ post '/' do
 end
  
 get '/:shortcode' do
+  redis_r = Redis.new(:host => redis_endpoint_r, :port=> 6379)
   @url = redis_r.get "links:#{params[:shortcode]}"
   redirect "http://"+@url 
 end
